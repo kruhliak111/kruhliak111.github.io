@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертер тексту у формат .stendhal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ffa401;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #ff7c02;
+        }
+        #output {
+            white-space: pre-wrap;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+        }
+        .info {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        .info h2 {
+            margin-top: 0;
+        }
+        .info a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .info a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Конвертер тексту у формат .stendhal (Сайт створений партією "Спільна Ідея")</h1>
+<input type="text" id="bookTitle" placeholder="Введіть назву книги">
+<textarea id="inputText" placeholder="Вставте свій текст тут..."></textarea>
+<button onclick="convertText()">Конвертувати</button>
+<button onclick="downloadFile()">Завантажити файл</button>
+
+<h2>Результат:</h2>
+<div id="output"></div>
+
+<div class="info">
+    <h2>Важлива інформація</h2>
+    <p>Після створення та завантаження книги у форматі <code>.stendhal</code>, вам потрібно перемістити файл у директорію:</p>
+    <p><code>.minecraft/config/stendhal/books</code></p>
+    <p>Для використання книги в грі, переконайтесь, що ви завантажили та встановили мод <a href="https://modrinth.com/mod/stendhal" target="_blank">Stendhal</a>.</p>
+    <p>Сайт створений партією "Спільна Ідея" для гравців сервера <a href="https://capyland.net">Долина Капібар</a></p>
+</div>
+
+<script>
+    let stendhalFormattedText = '';
+
+    function convertToStendhalFormat(inputText, bookTitle) {
+        const title = `title: ${bookTitle || 'Untitled'}`;
+        const author = "author: CapyLand";
+        const maxLengthPerPage = 250;
+        let formattedText = `${title}\n${author}\npages:\n`;
+
+        let words = inputText.split(' ');
+        let page = "";
+
+        words.forEach(word => {
+            if ((page + word).length > maxLengthPerPage) {
+                formattedText += `#- ${page.trim()}\n`;
+                page = "";
+            }
+            page += word + ' ';
+        });
+
+        if (page.trim().length > 0) {
+            formattedText += `#- ${page.trim()}\n`;
+        }
+
+        return formattedText.trim();
+    }
+
+    function convertText() {
+        let inputText = document.getElementById('inputText').value;
+        let bookTitle = document.getElementById('bookTitle').value;
+        stendhalFormattedText = convertToStendhalFormat(inputText, bookTitle);
+        document.getElementById('output').innerText = stendhalFormattedText;
+    }
+
+    function downloadFile() {
+        let bookTitle = document.getElementById('bookTitle').value || 'Untitled';
+        let blob = new Blob([stendhalFormattedText], { type: 'text/plain' });
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = bookTitle + '.stendhal';
+        link.click();
+
+        // Очищення полів після завантаження файлу
+        document.getElementById('bookTitle').value = '';
+        document.getElementById('inputText').value = '';
+        document.getElementById('output').innerText = '';
+    }
+</script>
+</body>
+</html>
