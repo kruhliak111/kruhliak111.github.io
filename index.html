@@ -84,9 +84,8 @@
     function convertToStendhalFormat(inputText, bookTitle) {
         const title = `title: ${bookTitle || 'Untitled'}`;
         const author = "author: CapyLand";
-        const maxLengthPerPage = 240;
-        const maxLengthPerRaw = 13;
         const maxLinesPerParagraph = 14;
+        const maxLengthPerRaw = 13;
         let formattedText = `${title}\n${author}\npages:\n`;
 
         // Розбиваємо текст на абзаци за новими рядками
@@ -95,31 +94,39 @@
         paragraphs.forEach(paragraph => {
             if (paragraph.trim().length > 0) {
                 let words = paragraph.split(' ');
-                let page = "";
+                let line = "";
                 let lineCount = 0;
 
+                formattedText += `#- `; // Додаємо #- перед кожним параграфом
+
                 words.forEach(word => {
-                    if ((page + word).length > maxLengthPerPage || lineCount >= maxLinesPerParagraph) {
-                        formattedText += `#- ${page.trim()}\n`;
-                        page = "";
-                        lineCount = 0;
-                    }
-                    // Перевіряємо довжину рядка
-                    if ((page + word).length > maxLengthPerRaw) {
-                        // Розбиваємо рядок на декілька рядків
+                    // Перевіряємо довжину слів
+                    if (word.length > maxLengthPerRaw) {
+                        // Розбиваємо слово на декілька слів
                         while (word.length > 0) {
                             let chunk = word.substring(0, maxLengthPerRaw);
                             word = word.substring(maxLengthPerRaw);
-                            formattedText += `#- ${chunk}\n`;
+                            line += chunk + ' ';
                             lineCount++;
+                            if (lineCount >= maxLinesPerParagraph) {
+                                formattedText += line.trim() + '\n';
+                                line = "";
+                                lineCount = 0;
+                            }
                         }
                     } else {
-                        page += word + ' ';
+                        line += word + ' ';
+                        lineCount++;
+                        if (lineCount >= maxLinesPerParagraph) {
+                            formattedText += line.trim() + '\n';
+                            line = "";
+                            lineCount = 0;
+                        }
                     }
                 });
 
-                if (page.trim().length > 0) {
-                    formattedText += `#- ${page.trim()}\n`;
+                if (line.trim().length > 0) {
+                    formattedText += line.trim() + '\n';
                 }
             }
         });
