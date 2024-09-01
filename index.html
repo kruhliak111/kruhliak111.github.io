@@ -84,7 +84,7 @@
     function convertToStendhalFormat(inputText, bookTitle) {
         const title = `title: ${bookTitle || 'Untitled'}`;
         const author = "author: CapyLand";
-        const maxLengthPerPage = 250;
+        const maxLengthPerPage = 240;
         let formattedText = `${title}\n${author}\npages:\n`;
 
         let words = inputText.split(' ');
