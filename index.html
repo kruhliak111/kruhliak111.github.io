@@ -90,17 +90,18 @@
         let words = inputText.split(' ');
         let page = "";
 
-        words.forEach(word => {
+        words.forEach((word, index) => {
             if ((page + word).length > maxLengthPerPage) {
                 formattedText += `#- ${page.trim()}\n`;
                 page = "";
             }
             page += word + ' ';
-        });
 
-        if (page.trim().length > 0) {
-            formattedText += `#- ${page.trim()}\n`;
-        }
+            if (index === words.length - 1 || (page + words[index + 1]).length > maxLengthPerPage) {
+                formattedText += `#- ${page.trim()}\n`;
+                page = "";
+            }
+        });
 
         return formattedText.trim();
     }
