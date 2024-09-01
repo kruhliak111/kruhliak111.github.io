@@ -85,6 +85,7 @@
         const title = `title: ${bookTitle || 'Untitled'}`;
         const author = "author: CapyLand";
         const maxLengthPerPage = 240;
+        const maxLengthPerRaw = 13;
         let formattedText = `${title}\n${author}\npages:\n`;
 
         // Розбиваємо текст на абзаци за новими рядками
@@ -100,7 +101,17 @@
                         formattedText += `#- ${page.trim()}\n`;
                         page = "";
                     }
-                    page += word + ' ';
+                    // Перевіряємо довжину рядка
+                    if ((page + word).length > maxLengthPerRaw) {
+                        // Розбиваємо рядок на декілька рядків
+                        while (word.length > 0) {
+                            let chunk = word.substring(0, maxLengthPerRaw);
+                            word = word.substring(maxLengthPerRaw);
+                            formattedText += `#- ${chunk}\n`;
+                        }
+                    } else {
+                        page += word + ' ';
+                    }
                 });
 
                 if (page.trim().length > 0) {
