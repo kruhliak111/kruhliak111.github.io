@@ -84,22 +84,28 @@
     function convertToStendhalFormat(inputText, bookTitle) {
         const title = `title: ${bookTitle || 'Untitled'}`;
         const author = "author: CapyLand";
-        const maxLengthPerPage = 240;
+        const maxLengthPerPage = 250;
         let formattedText = `${title}\n${author}\npages:\n`;
 
-        let words = inputText.split(' ');
-        let page = "";
+        // Розбиваємо текст на абзаци за новими рядками
+        let paragraphs = inputText.split('\n');
 
-        words.forEach((word, index) => {
-            if ((page + word).length > maxLengthPerPage) {
-                formattedText += `#- ${page.trim()}\n`;
-                page = "";
-            }
-            page += word + ' ';
+        paragraphs.forEach(paragraph => {
+            if (paragraph.trim().length > 0) {
+                let words = paragraph.split(' ');
+                let page = "";
 
-            if (index === words.length - 1 || (page + words[index + 1]).length > maxLengthPerPage) {
-                formattedText += `#- ${page.trim()}\n`;
-                page = "";
+                words.forEach(word => {
+                    if ((page + word).length > maxLengthPerPage) {
+                        formattedText += `#- ${page.trim()}\n`;
+                        page = "";
+                    }
+                    page += word + ' ';
+                });
+
+                if (page.trim().length > 0) {
+                    formattedText += `#- ${page.trim()}\n`;
+                }
             }
         });
 
